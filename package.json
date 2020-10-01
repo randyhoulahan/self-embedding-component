@@ -1,6 +1,6 @@
 {
   "name": "@houlagins/self-embedding-component",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Self embedding component service",
   "author": "Randy J. Houlahan",
   "homepage": "https://github.com/randyhoulahan/self-embedding-component/tree/master#readme",
@@ -9,6 +9,7 @@
   "main": "dist/esm/index.js",
   "module": "dist/esm/index.js",
   "unpkg": "dist/browser/index.min.js",
+  "jsdelivr": "dist/browser/index.min.js",
   "source": "src/index.js",
   "src": "src/index.mjs",
   "type": "module",
@@ -57,7 +58,7 @@
     "change-case": "~4.1.1"
   },
   "devDependencies": {
-    "@houlagins/dist-builder": "~1.0.1",
+    "@houlagins/dist-builder": "~1.0.2",
     "@vue/cli-plugin-e2e-cypress": "~4.5.0"
   }
 }
