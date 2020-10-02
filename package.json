@@ -1,6 +1,6 @@
 {
   "name": "@houlagins/self-embedding-component",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Self embedding component service",
   "author": "Randy J. Houlahan",
   "homepage": "https://github.com/randyhoulahan/self-embedding-component/tree/master#readme",
@@ -51,14 +51,15 @@
     "build-test-widget": "dist-builder testWidget",
     "link": "lerna link",
     "release": "yarn publish --access=public --tag latest",
-    "serve-esm-test": "COMP_ID=action-search dist-builder serveTestWidget"
+    "serve-esm-test": "COMP_ID=action-search dist-builder serveTestWidget",
+    "clean:reinstall": "if test -f yarn.lock; then rm yarn.lock; fi && if test -d node_modules; then rm -rf node_modules; fi && yarn --exact --force"
   },
   "dependencies": {
     "@houlagins/default-options": "~1.0.0",
     "change-case": "~4.1.1"
   },
   "devDependencies": {
-    "@houlagins/dist-builder": "~1.0.2",
+    "@houlagins/dist-builder": "~1.0.7",
     "@vue/cli-plugin-e2e-cypress": "~4.5.0"
   }
 }
