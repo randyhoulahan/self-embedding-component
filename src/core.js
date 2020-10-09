@@ -4,17 +4,17 @@ import   getDefaultOptions       from './default-options'
 const parentNode  = ''
 const selfElement = ''
 
-export let opts = {}
+const globalOptions = {}
 
-export const createAppDiv = () => {
+export const createAppDiv = (opts) => {
   const divTag = document.createElement('div')
 
   divTag.id = opts.appId
 
-  insertElement(divTag)
+  insertElement(opts, divTag)
 }
 
-export const  insertElement = (el) => {
+export const  insertElement = (opts, el) => {
   opts.parentNode.insertBefore(el, opts.selfElement)
 }
 
@@ -23,32 +23,32 @@ export const build = (options, legacy=false) => {
 
   const regX = new RegExp('(@.+/)', 'ig')
 
-  opts = { ...getDefaultOptions(options), parentNode, selfElement,
-           get selfId(){ return this.id? this.id : this.name.replace(regX, '') },
-           set selfId(id){ this.id = id },
-           get appId(){ return `appId-${this.selfId}` },
-           get compName(){ return pascalCase((this.selfId)) },
-           get cdnUrl(){ return this.version? `${this.cdn}/${this.name}@${this.version}` : `${this.cdn}/${this.name}` } }
+  globalOptions[options.name] = { ...getDefaultOptions(options), parentNode, selfElement,
+                                  get selfId(){ return this.id? this.id : this.name.replace(regX, '') },
+                                  set selfId(id){ this.id = id },
+                                  get appId(){ return `appId-${this.selfId}` },
+                                  get compName(){ return pascalCase((this.selfId)) },
+                                  get cdnUrl(){ return this.version? `${this.cdn}/${this.name}@${this.version}` : `${this.cdn}/${this.name}` } }
 
-  normalizeVuePlugins()
-  initElements(legacy)
-  loadCss()
+  normalizeVuePlugins(globalOptions[options.name])
+  initElements(globalOptions[options.name], legacy)
+  loadCss(globalOptions[options.name])
 
-  return opts
+  return globalOptions[options.name]
 }
 
-export const initElements = (legacy) => {
+export const initElements = (opts, legacy) => {
   const elementId = legacy? `${opts.selfId}-legacy` : opts.selfId
 
   opts.selfElement = document.getElementById(elementId)
 
   if(!opts.selfElement) throw new Error(`Id on script tag not found: id="${elementId}"`)
 
-  opts.propsData.options = attrsAsOptions()
+  opts.propsData.options = attrsAsOptions(opts)
   opts.parentNode        = opts.selfElement.parentNode
 }
 
-function attrsAsOptions(){
+function attrsAsOptions(opts){
   const   self         = opts.selfElement
   const { options }    = opts.propsData
   const   attrs        = self.attributes
@@ -65,24 +65,24 @@ function attrsAsOptions(){
   return Object.assign(options, newOptions)
 }
 
-function loadCss(){
+function loadCss(opts){
   const { dependencies: { css } } = opts
 
   if(css && css.length)
-    css.forEach(cssUrl => loadLink(cssUrl))
+    css.forEach(cssUrl => loadLink(opts, cssUrl))
 }
 
-function loadLink (url){
+function loadLink (opts, url){
   const tag = document.createElement('link')
 
   tag.rel     = 'stylesheet'
   tag.charset = 'utf-8'
   tag.href    = url
 
-  insertElement(tag)
+  insertElement(opts, tag)
 }
 
-function normalizeVuePlugins(){
+function normalizeVuePlugins(opts){
   const { dependencies      :{ all, vuePlugins } } = opts
 
   if(!vuePlugins || !vuePlugins.length) return

@@ -1,6 +1,6 @@
 {
   "name": "@houlagins/self-embedding-component",
-  "version": "1.0.3",
+  "version": "1.0.7",
   "description": "Self embedding component service",
   "author": "Randy J. Houlahan",
   "homepage": "https://github.com/randyhoulahan/self-embedding-component/tree/master#readme",
@@ -47,7 +47,7 @@
     "build": "DEBUG=true dist-builder",
     "test:e2e": "vue-cli-service test:e2e",
     "test:e2e:headless": "yarn vue-cli-service test:e2e --headless",
-    "lint": "yarn vue-cli-service lint --fix ",
+    "lint": "eslint . --fix ",
     "build-test-widget": "dist-builder testWidget",
     "link": "lerna link",
     "release": "yarn publish --access=public --tag latest",

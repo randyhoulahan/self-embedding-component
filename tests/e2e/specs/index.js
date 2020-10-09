@@ -2,7 +2,7 @@
 
 describe('self-embedding-component', () => {
 
-  it('loads all data into 10 groups', () => {
+  it('t', () => {
     cy.visit('/')
     cy.wait(1000)
     cy.get('#num-exports')

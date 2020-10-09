@@ -31,7 +31,7 @@ const validationMap = {
 
 const dependencies = { all: [],  css: [], vuePlugins: [], legacy: [] }
 
-const dev     = { dependencyRef,  cdn, dependencies  }
+const dev     = { dependencyRef, cdn, dependencies  }
 const stg     = { ...dev }
 const prod    = { ...stg }
 

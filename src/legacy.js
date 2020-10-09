@@ -1,6 +1,6 @@
-import { build, opts, createAppDiv, insertElement } from './core.js'
+import { build, createAppDiv, insertElement } from './core.js'
 
-export const loadScript = (url) => {
+export const loadScript = (opts, url) => {
   const tag = document.createElement('script')
 
   tag.charset  = 'utf-8'
@@ -8,7 +8,7 @@ export const loadScript = (url) => {
   tag.src      = url
 
   const promiseFn = (resolve, reject) => {
-    insertElement(tag)
+    insertElement(opts, tag)
     tag.onload  = () => resolve(true)
     tag.onerror = () => reject(false)
   }
@@ -16,19 +16,19 @@ export const loadScript = (url) => {
   return new Promise(promiseFn)
 }
 
-export const buildLegacyWidget = async ( theComponent, options = {}, plugins ) => {
+export const buildLegacyWidget = async (theComponent, options = {}, plugins) => {
   const opts                     = build(options, true)
   const { dependencies:{ all } } = opts
 
   if(all && all.length)
     for (let i = 0; i < all.length; i++)
-      await loadScript(all[i].url)
+      await loadScript(opts, all[i].url)
   
-  loadVuePlugins(plugins)
+  loadVuePlugins(opts, plugins)
   loadApp(theComponent)
 }
 
-function mounted (){
+const getMounted = (opts) => function  (){
   const i18n                      = getI18n()
   const { propsData }             = opts
   const VueClass                  = window['Vue'].extend(this.$options.theComponent)
@@ -41,10 +41,10 @@ function mounted (){
 }
 
 
-const loadApp =  (theComponent) => {
-  createAppDiv()
+const loadApp =  (opts, theComponent) => {
+  createAppDiv(opts)
 
-  new window['Vue']({ mounted, theComponent }).$mount(`#${opts.appId}`)
+  new window['Vue']({ mounted: getMounted(opts), theComponent }).$mount(`#${opts.appId}`)
 }
 
 function getI18n(){
@@ -53,11 +53,11 @@ function getI18n(){
   return undefined
 }
 
-function loadVuePlugins(plugins){ // eslint-disable-line
+function loadVuePlugins(opts, plugins){ // eslint-disable-line
   const { dependencies:{ vuePlugins }, propsData: { forceEnv } } = opts
   const pluginOptionsDefault = { forceEnv }
 
-  if(vuePlugins && vuePlugins.length) 
+  if(vuePlugins && vuePlugins.length)
     for (let i = 0; i < vuePlugins.length; i++)
       if(!window[vuePlugins[i].name]){ throw new Error(`${vuePlugins[i].name} not found on global object`) }
       else{

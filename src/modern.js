@@ -1,7 +1,7 @@
-import { build, opts, createAppDiv } from './core.js'
+import { build, createAppDiv } from './core.js'
 
-function mounted (){
-  const i18n                      = getI18n()
+const getMounted = (opts) => function mounted (){
+  const i18n                      = getI18n(opts.propsData.options)
   const { compName, propsData }   = opts
   const VueClass                  = window['Vue'].extend(window[compName])
 
@@ -13,17 +13,17 @@ function mounted (){
   this.$el.appendChild(vueClassInstance.$el)
 }
 
-const loadSelf =  () => {
+const loadSelf =  (opts) => {
   const { cdnUrl, compName, selfUrl } = opts
 
   return loadScript({ url: selfUrl || cdnUrl, name: compName })
 }
 
 
-const loadApp =  () => {
-  createAppDiv()
+const loadApp =  (opts) => {
+  createAppDiv(opts)
 
-  new window['Vue']({ mounted }).$mount(`#${opts.appId}`)
+  new window['Vue']({ mounted: getMounted(opts) }).$mount(`#${opts.appId}`)
 }
 
 const loadScript = (dep) => {
@@ -46,12 +46,12 @@ export const buildWidget = async (options = {}) => {
 
   await Promise.all(dependencyPromises)
 
-  loadVuePlugins()
-  await loadSelf()
-  loadApp()
+  loadVuePlugins(opts)
+  await loadSelf(opts)
+  loadApp(opts)
 }
 
-function loadVuePlugins(){
+function loadVuePlugins(opts){
   const { dependencies:{ vuePlugins }, propsData: { forceEnv } } = opts
   const pluginOptionsDefault = { forceEnv }
 
@@ -69,8 +69,11 @@ function loadVuePlugins(){
     }
 }
 
-function getI18n(){
+function getI18n({ i18n, locale='en' }){
+  const messages = i18n? i18n.messages : { en: {} }
+
   if(window['VueI18n'])
-    return new window['VueI18n']({ locale: 'en', fallbackLocale: 'en', messages: { en: {} } })
+    return new window['VueI18n']({ locale, fallbackLocale: 'en', messages })
+
   return undefined
 }
